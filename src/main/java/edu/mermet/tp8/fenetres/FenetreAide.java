@@ -26,8 +26,8 @@ public class FenetreAide {
 		int lines = -1;
 		try {
 			Properties properties = new Properties();
-			String texteLink = "src/main/resources/HowTo/text.properties";
-			String titreLink = "src/main/resources/HowTo/titre.properties";
+			String texteLink = "src/main/resources/HowTo/textes.properties";
+			String titreLink = "src/main/resources/HowTo/titres.properties";
 			File titre = new File(titreLink);
 			File texte = new File(texteLink);
 			InputStream inputTitre = new FileInputStream(titre);
@@ -65,7 +65,7 @@ public class FenetreAide {
 		zoneExplications.setContentType("text/html");
 		zoneExplications.setEditable(false);
 
-		int finalLines = lines;
+		int finalLines = lines; 	//lines a le nombre de lignes du fichier textes.properties
 		liste.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -77,14 +77,10 @@ public class FenetreAide {
 				}
 			}
 		});
-
-		JPanel mainPanel = new JPanel(new BorderLayout());
-		mainPanel.add(liste, BorderLayout.WEST);
-		mainPanel.add(zoneExplications, BorderLayout.EAST);
-
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, liste, zoneExplications);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setDividerLocation(150);
+
 		liste.setMinimumSize(new Dimension(100, 100));
 		zoneExplications.setMinimumSize(new Dimension(100, 100));
 
