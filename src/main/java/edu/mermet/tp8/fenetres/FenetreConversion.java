@@ -4,15 +4,10 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 import edu.mermet.tp8.Application;
@@ -27,29 +22,66 @@ public class FenetreConversion extends AbstractFenetreInterne {
     private JButton boutonConvertir;
     private Action actionConvertir;
     private boolean celsiusAFocus;
-    public FenetreConversion(Action action) {
+    public FenetreConversion(Application appli, Action action) {
         super(action,"Conversion celsius/Farenheit");
         this.setSize(new Dimension(100,50));
-        this.setLayout(new GridLayout(3,1));
+        this.setLayout(new GridLayout(3,2));
+
         JPanel ligneCelsius = new JPanel();
         ligneCelsius.setLayout(new FlowLayout(FlowLayout.TRAILING));
+        ligneCelsius.setToolTipText("Valeur en degré de Celsius");
+
+        JButton helpCelsius = new JButton(new ImageIcon("src/main/resources/question.png"));
+        helpCelsius.setBorder(BorderFactory.createEmptyBorder());
+        helpCelsius.setContentAreaFilled(false);
+        helpCelsius.setPreferredSize(new Dimension(20, 20));
+        helpCelsius.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                appli.getActionAfficherAide().actionPerformed(actionEvent);
+            }
+        });
+
         JLabel labCelsius = new JLabel("Celsius :");
         champCelsius = new JTextField(15);
+        champCelsius.setToolTipText("Valeur en degré de Celsius");
         labCelsius.setLabelFor(champCelsius);
+
         ligneCelsius.add(labCelsius);
         ligneCelsius.add(champCelsius);
+        ligneCelsius.add(helpCelsius);
         this.add(ligneCelsius);
+
         celsiusAFocus = true;
         champCelsius.addFocusListener(new EcouteurFocus(true));
+
         JPanel ligneFarenheit = new JPanel();
         ligneFarenheit.setLayout(new FlowLayout(FlowLayout.TRAILING));
+        ligneFarenheit.setToolTipText("Valeur en degré de Farhenheit");
+
+        JButton helpFrarenheit = new JButton(new ImageIcon("src/main/resources/question.png"));
+        helpFrarenheit.setBorder(BorderFactory.createEmptyBorder());
+        helpFrarenheit.setContentAreaFilled(false);
+        helpFrarenheit.setPreferredSize(new Dimension(20, 20));
+        helpFrarenheit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                appli.getActionAfficherAide().actionPerformed(actionEvent);
+            }
+        });
+
         JLabel labFarenheit = new JLabel("Farenheit :");
         champFarenheit = new JTextField(15);
+        champFarenheit.setToolTipText("Valeur en degré de Farhenheit");
         labFarenheit.setLabelFor(champFarenheit);
+
         ligneFarenheit.add(labFarenheit);
         ligneFarenheit.add(champFarenheit);
+        ligneFarenheit.add(helpFrarenheit);
         this.add(ligneFarenheit);
+
         champFarenheit.addFocusListener(new EcouteurFocus(false));
+
         JPanel ligneValider = new JPanel();
         ligneValider.setLayout(new FlowLayout(FlowLayout.CENTER));
         actionConvertir = new ActionConvertir();

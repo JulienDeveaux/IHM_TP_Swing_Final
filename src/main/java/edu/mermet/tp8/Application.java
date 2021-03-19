@@ -27,10 +27,12 @@ public class Application extends JFrame {   //1 xml par user simong.xml
     private JInternalFrame texte;           //aides tooltip + bouton aide + menu howto + click droit avec menu d'aide qui apparait
     private JInternalFrame diaporama;       //howto après howto de la fenêtre après l'aide locale après affichage suggestion après gestion du niveau de compétence après gestion en conséquence du menu application qui ont été configurées en auto
     private JInternalFrame boutons;         //la compétence est calculée -> vidéo mermet 8 mars épinglée
+    private JInternalFrame aide;
     private Action actionAfficherConversion;
     private Action actionAfficherTexte;
     private Action actionAfficherDiaporama;
     private Action actionAfficherBoutons;
+    private Action actionAfficherAide;
     public Application() {
         super("multi-fenêtres");
         this.setContentPane(new JDesktopPane());
@@ -72,13 +74,23 @@ public class Application extends JFrame {   //1 xml par user simong.xml
         menuAide.setMnemonic(KeyEvent.VK_F1);
         JMenuItem howToMenu = new JMenuItem("Comment faire ?");
         JMenuItem configMenus = new JMenuItem("Configuration des menus");
+
+        actionAfficherAide = new ActionAfficherAide();
+
         howToMenu.addActionListener (new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent aev) {
-                new FenetreAide();
+                new FenetreAideGenerale();
             }
         });
         howToMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, true));
+        configMenus.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                new FenetreConfigurationAide(menuApplication);
+            }
+        });
+        configMenus.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, true));
         menuAide.add(howToMenu);
         menuAide.add(configMenus);
         barre.add(menuAide);
@@ -86,7 +98,7 @@ public class Application extends JFrame {   //1 xml par user simong.xml
         
         // ****** Création des fenêtres ******
         // ------ fenêtre conversion ------
-        conversion = new FenetreConversion(actionAfficherConversion);
+        conversion = new FenetreConversion(this, actionAfficherConversion);
         this.add(conversion);
         // ------ fenêtre texte ------
         texte = new FenetreTexte(actionAfficherTexte);
@@ -97,11 +109,28 @@ public class Application extends JFrame {   //1 xml par user simong.xml
         // ------ fenêtre boutons ------
         boutons = new FenetreBoutons(this,actionAfficherBoutons);
         this.add(boutons);
+        // ------ fenêtre aide ------
+        aide = new FenetreAide(this, actionAfficherAide);
+        this.add(aide);
         // ****** Fin création fenêtres ******
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(600,300);
         this.setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    private class ActionAfficherAide extends AbstractAction {
+        public ActionAfficherAide() {
+            super("Aide");
+            putValue(Action.ACCELERATOR_KEY,KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK));
+            putValue(Action.MNEMONIC_KEY,KeyEvent.VK_B);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            aide.setVisible(true);
+            enableAide(false);
+        }
     }
 
     private class ActionAfficherBoutons extends AbstractAction {
@@ -176,6 +205,10 @@ public class Application extends JFrame {   //1 xml par user simong.xml
         actionAfficherBoutons.setEnabled(b);
     }
 
+    public void enableAide(boolean b) {
+        actionAfficherAide.setEnabled(b);
+    }
+
     public Action getActionAfficherConversion() {
         return actionAfficherConversion;
     }
@@ -187,9 +220,14 @@ public class Application extends JFrame {   //1 xml par user simong.xml
     public Action getActionAfficherDiaporama() {
         return actionAfficherDiaporama;
     }
+
+    public Action getActionAfficherAide() {
+        return actionAfficherAide;
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Application::new);
     }
 
-    
+
 }
