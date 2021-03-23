@@ -1,5 +1,7 @@
 package edu.mermet.tp8.fenetres;
 
+import edu.mermet.tp8.Application;
+
 import javax.swing.*;
 
 import java.awt.*;
@@ -11,8 +13,10 @@ import java.util.Properties;
 import static javax.swing.WindowConstants.HIDE_ON_CLOSE;
 
 public class FenetreConfigurationAide {
+	Application appli;
 
-	public  FenetreConfigurationAide(JMenu menuApplication){
+	public  FenetreConfigurationAide(JMenu menuApplication, Application appli){
+		this.appli = appli;
 		JFrame f = new JFrame("Configuration des menus");
 		f.setDefaultCloseOperation(HIDE_ON_CLOSE);
 		generateConfig(f, menuApplication);
@@ -133,6 +137,26 @@ public class FenetreConfigurationAide {
 					properties.storeToXML(o, "propriétés");
 				} catch (IOException e) {
 					e.printStackTrace();
+				}
+				if(properties.getProperty("Conversion Celsius/Farenheit").equals("Caché")) {
+					appli.enableConversion(false);
+				} else {
+					appli.enableConversion(true);
+				}
+				if(properties.getProperty("Saisie de texte").equals("Caché")) {
+					appli.enableTexte(false);
+				} else {
+					appli.enableTexte(true);
+				}
+				if(properties.getProperty("Diaporama").equals("Caché")) {
+					appli.enableDiaporama(false);
+				} else {
+					appli.enableDiaporama(true);
+				}
+				if(properties.getProperty("Boutons").equals("Caché")) {
+					appli.enableBoutons(false);
+				} else {
+					appli.enableBoutons(true);
 				}
 				f.setVisible(false);
 			}

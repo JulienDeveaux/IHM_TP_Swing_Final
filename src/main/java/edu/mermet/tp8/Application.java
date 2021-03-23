@@ -77,10 +77,11 @@ public class Application extends JFrame {   //1 xml par user simong.xml
             }
         });
         howToMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, true));
+        Application appli = this;
         configMenus.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                new FenetreConfigurationAide(menuApplication);
+                new FenetreConfigurationAide(menuApplication, appli);
             }
         });
         configMenus.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, true));
@@ -156,14 +157,25 @@ public class Application extends JFrame {   //1 xml par user simong.xml
         {
             e.printStackTrace();
         }
-        if(properties.getProperty("itemConversion") == "Caché") {
+        if(properties.getProperty("Conversion Celsius/Farenheit").equals("Caché")) {
             enableConversion(false);
-        } else if(properties.getProperty("itemTexte") == "Caché") {
+        } else {
+            enableConversion(true);
+        }
+        if(properties.getProperty("Saisie de texte").equals("Caché")) {
             enableTexte(false);
-        } else if(properties.getProperty("itemDiaporama") == "Caché") {
+        } else {
+            enableTexte(true);
+        }
+        if(properties.getProperty("Diaporama").equals("Caché")) {
             enableDiaporama(false);
-        } else if(properties.getProperty("itemBoutons") == "Caché") {
+        } else {
+            enableDiaporama(true);
+        }
+        if(properties.getProperty("Boutons").equals("Caché")) {
             enableBoutons(false);
+        } else {
+            enableBoutons(true);
         }
     }
 
