@@ -28,8 +28,8 @@ public class FenetreDiaporama extends AbstractFenetreInterne {
         super(action,"Diaporama");
         images = new ImageIcon[3];
         images[0] = new ImageIcon("src/main/resources/Diaporama/10bocage.jpg");
-        images[0] = new ImageIcon("src/main/resources/Diaporama/12baieEcalgrain.jpg");
-        images[0] = new ImageIcon("src/main/resources/Diaporama/15cote.jpg");
+        images[1] = new ImageIcon("src/main/resources/Diaporama/12baieEcalgrain.jpg");
+        images[2] = new ImageIcon("src/main/resources/Diaporama/15cote.jpg");
         
         JPanel panneauTexte = new JPanel();
         /*textes = new String[3];
