@@ -13,17 +13,18 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
+import static javax.swing.WindowConstants.HIDE_ON_CLOSE;
 
 public class FenetreConfigurationAide {
 	public  FenetreConfigurationAide(JMenu menuApplication){
 		JFrame f = new JFrame("Configuration des menus");
-		f.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		f.setDefaultCloseOperation(HIDE_ON_CLOSE);
 		generateConfig(f, menuApplication);
 		f.pack();
 		f.setLocationRelativeTo(null);
@@ -37,8 +38,30 @@ public class FenetreConfigurationAide {
 			menuItems[i] = menuApplication.getItem(i).getText();
 			System.out.println(menuItems[i]);
 		}
+		f.setLayout(new GridLayout(menuApplication.getItemCount(), 4));
+		ButtonGroup[] bGroup = new ButtonGroup[menuApplication.getItemCount()];
+		JLabel[] labels = new JLabel[menuApplication.getItemCount()];
+		JRadioButton[] boutonsConfig = new JRadioButton[menuApplication.getItemCount() * 3];
+		for(int i = 0; i < menuApplication.getItemCount(); i++) {
+			labels[i] = new JLabel(menuItems[i]);
+			f.add(labels[i]);
+			bGroup[i] = new ButtonGroup();
+			int it = 0;
+			for(int j = i * 3; j < (i * 3 + 3); j++) {
+				if(it == 0) {
+					boutonsConfig[j] = new JRadioButton("Auto");
+				}else if(it == 1) {
+					boutonsConfig[j] = new JRadioButton("Affiché");
+				} else if(it == 2) {
+					boutonsConfig[j] = new JRadioButton("Caché");
+				}
+				bGroup[i].add(boutonsConfig[j]);
+				it++;
+				f.add(boutonsConfig[j]);
+			}
+		}
 		// ------ parse XML ------
-		File configXML = new File("/home/julien/.ihm/" + System.getProperty("user.name") + ".xml");
+		/*File configXML = new File("/home/julien/.ihm/" + System.getProperty("user.name") + ".xml");
 		if(!configXML.exists() || configXML.isDirectory()) {
 			// ------ création ------
 			try {
@@ -127,7 +150,7 @@ public class FenetreConfigurationAide {
 			}
 		} catch (ParserConfigurationException | IOException | SAXException e) {
 			e.printStackTrace();
-		}
+		}*/
 
 	}
 }

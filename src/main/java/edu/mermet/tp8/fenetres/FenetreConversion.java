@@ -32,6 +32,7 @@ public class FenetreConversion extends AbstractFenetreInterne {
         ligneCelsius.setToolTipText("Valeur en degré de Celsius");
 
         JButton helpCelsius = new JButton(new ImageIcon("src/main/resources/question.png"));
+        helpCelsius.setToolTipText("Aide");
         helpCelsius.setBorder(BorderFactory.createEmptyBorder());
         helpCelsius.setContentAreaFilled(false);
         helpCelsius.setPreferredSize(new Dimension(20, 20));
@@ -60,6 +61,7 @@ public class FenetreConversion extends AbstractFenetreInterne {
         ligneFarenheit.setToolTipText("Valeur en degré de Farhenheit");
 
         JButton helpFrarenheit = new JButton(new ImageIcon("src/main/resources/question.png"));
+        helpFrarenheit.setToolTipText("Aide");
         helpFrarenheit.setBorder(BorderFactory.createEmptyBorder());
         helpFrarenheit.setContentAreaFilled(false);
         helpFrarenheit.setPreferredSize(new Dimension(20, 20));
@@ -86,6 +88,7 @@ public class FenetreConversion extends AbstractFenetreInterne {
         ligneValider.setLayout(new FlowLayout(FlowLayout.CENTER));
         actionConvertir = new ActionConvertir();
         boutonConvertir = new JButton(actionConvertir);
+        boutonConvertir.setToolTipText("Convertir");
         ligneValider.add(boutonConvertir);
         this.add(ligneValider);
         
