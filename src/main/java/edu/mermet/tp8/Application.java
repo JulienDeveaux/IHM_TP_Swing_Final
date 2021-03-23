@@ -1,12 +1,14 @@
 package edu.mermet.tp8;
 
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.util.Properties;
+import java.util.Random;
 import javax.swing.*;
 
 import edu.mermet.tp8.fenetres.*;
@@ -15,17 +17,15 @@ import edu.mermet.tp8.fenetres.*;
  *
  * @author brunomermet
  */
-public class Application extends JFrame {   //1 xml par user simong.xml
-    private JInternalFrame conversion;      //dans .imh dans home
-    private JInternalFrame texte;           //aides tooltip + bouton aide + menu howto + click droit avec menu d'aide qui apparait
-    private JInternalFrame diaporama;       //howto après howto de la fenêtre après l'aide locale après affichage suggestion après gestion du niveau de compétence après gestion en conséquence du menu application qui ont été configurées en auto
-    private JInternalFrame boutons;         //la compétence est calculée -> vidéo mermet 8 mars épinglée
-    private JInternalFrame aide;
+public class Application extends JFrame {
+    private JInternalFrame conversion;
+    private JInternalFrame texte;
+    private JInternalFrame diaporama;
+    private JInternalFrame boutons;
     private Action actionAfficherConversion;
     private Action actionAfficherTexte;
     private Action actionAfficherDiaporama;
     private Action actionAfficherBoutons;
-    private Action actionAfficherAide;
     public Application() {
         super("multi-fenêtres");
         this.setContentPane(new JDesktopPane());
@@ -68,8 +68,6 @@ public class Application extends JFrame {   //1 xml par user simong.xml
         JMenuItem howToMenu = new JMenuItem("Comment faire ?");
         JMenuItem configMenus = new JMenuItem("Configuration des menus");
 
-        actionAfficherAide = new ActionAfficherAide();
-
         howToMenu.addActionListener (new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent aev) {
@@ -89,35 +87,8 @@ public class Application extends JFrame {   //1 xml par user simong.xml
         menuAide.add(configMenus);
         barre.add(menuAide);
         // ****** Fin barre de menu ******
-        
-        // ****** Création des fenêtres ******
-        // ------ fenêtre conversion ------
-        conversion = new FenetreConversion(this, actionAfficherConversion);
-        this.add(conversion);
-        // ------ fenêtre texte ------
-        texte = new FenetreTexte(actionAfficherTexte);
-        this.add(texte);
-        // ------ fenêtre diaporama ------
-        diaporama = new FenetreDiaporama(actionAfficherDiaporama);
-        this.add(diaporama);
-        // ------ fenêtre boutons ------
-        boutons = new FenetreBoutons(this,actionAfficherBoutons);
-        this.add(boutons);
-        // ------ fenêtre aide ------
-        aide = new FenetreAide(this, actionAfficherAide);
-        this.add(aide);
-        // ------ fenêtre aide du jour ------
-        JInternalFrame jour = new JInternalFrame();
-        jour.add(new JLabel("test"));
-        jour.setVisible(true);
-        jour.setDefaultCloseOperation(HIDE_ON_CLOSE);
-        this.add(jour);
-        // ****** Fin création fenêtres ******
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600,300);
-        this.setLocationRelativeTo(null);
-        setVisible(true);
-        // ------ parse et lecture XML ------
+
+        // ***** parse et lecture XML *****
         String nom = System.getProperty("user.name");
         File ihmXML = new File(System.getProperty("user.home") + "/.ihm");
         File preference   = new File(ihmXML.getPath() + "/" + nom + ".xml");
@@ -157,40 +128,101 @@ public class Application extends JFrame {   //1 xml par user simong.xml
         {
             e.printStackTrace();
         }
-        if(properties.getProperty("Conversion Celsius/Farenheit").equals("Caché")) {
-            enableConversion(false);
-        } else {
-            enableConversion(true);
-        }
-        if(properties.getProperty("Saisie de texte").equals("Caché")) {
-            enableTexte(false);
-        } else {
-            enableTexte(true);
-        }
-        if(properties.getProperty("Diaporama").equals("Caché")) {
-            enableDiaporama(false);
-        } else {
-            enableDiaporama(true);
-        }
-        if(properties.getProperty("Boutons").equals("Caché")) {
-            enableBoutons(false);
-        } else {
-            enableBoutons(true);
-        }
-    }
+        // ***** fin lecture XML *****
 
-    private class ActionAfficherAide extends AbstractAction {
-        public ActionAfficherAide() {
-            super("Aide");
-            putValue(Action.ACCELERATOR_KEY,KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK));
-            putValue(Action.MNEMONIC_KEY,KeyEvent.VK_B);
-        }
+        // ****** Création des fenêtres ******
+        // ------ fenêtre conversion ------
+        conversion = new FenetreConversion(this, actionAfficherConversion);
+        this.add(conversion);
+        // ------ fenêtre texte ------
+        texte = new FenetreTexte(actionAfficherTexte);
+        this.add(texte);
+        // ------ fenêtre diaporama ------
+        diaporama = new FenetreDiaporama(actionAfficherDiaporama);
+        this.add(diaporama);
+        // ------ fenêtre boutons ------
+        boutons = new FenetreBoutons(this,actionAfficherBoutons);
+        this.add(boutons);
+        // ------ fenêtre aide du jour ------
+        // ***** Récupération d'une aide aléatoire
 
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-            aide.setVisible(true);
-            enableAide(false);
+        JLabel aideText = new JLabel("");
+        String[] listeAide = new String[255];
+        Properties contextuelAide = new Properties();
+        int nbLignes = 0;
+        try{
+            File contextuel = new File("src/main/resources/HowTo/contextuel.properties");
+            InputStream input = new FileInputStream(contextuel);
+            if(input != null) {
+                contextuelAide.load(input);
+                BufferedReader reader = new BufferedReader(new FileReader(contextuel));
+                nbLignes = 1;
+                while (reader.readLine() != null) nbLignes++;
+                reader.close();
+
+                listeAide = new String[nbLignes - 1];
+                for(int i = 0; i < nbLignes; i++) {
+                    listeAide[i] = contextuelAide.getProperty("" + i);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
         }
+        Random r = new Random();
+        int rand = r.nextInt(nbLignes - 1) + 1;
+        while("Caché".equals(properties.getProperty("Aide" + rand))) {      //TODO boucle infinie si tout caché
+
+            rand = r.nextInt(nbLignes - 1) + 1;
+        }
+        aideText.setText(listeAide[rand]);
+
+        // ***** Fin récupération d'aide aléatoire
+        JWindow aideJour = new JWindow(this);
+        JButton aideOK = new JButton("OK");
+        JButton dontAskAgain = new JButton("Ne plus afficher");
+        aideOK.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                aideJour.setVisible(false);
+            }
+        });
+        final int ra = rand;
+        dontAskAgain.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                properties.setProperty("Aide" + ra, "Caché");
+                try{
+                    OutputStream o = new FileOutputStream(preference);
+                    properties.storeToXML(o, "propriétés");
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+                aideJour.setVisible(false);
+            }
+        });
+        ButtonGroup aideBgroup = new ButtonGroup();
+        aideBgroup.add(aideOK);
+        aideBgroup.add(dontAskAgain);
+
+        JPanel aideDown = new JPanel(new BorderLayout());
+        aideDown.add(aideOK, BorderLayout.WEST);
+        aideDown.add(dontAskAgain, BorderLayout.EAST);
+
+        aideJour.add(aideText, BorderLayout.NORTH);
+        aideJour.add(aideDown, BorderLayout.SOUTH);
+        aideJour.setSize(200, 100);
+        Point centre=GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
+        aideJour.setLocation(centre);
+        aideJour.setVisible(true);
+        // ****** Fin création fenêtres ******
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(600,300);
+        this.setLocationRelativeTo(null);
+        setVisible(true);
+        enableConversion(!properties.getProperty("Conversion Celsius/Farenheit").equals("Caché"));
+        enableTexte(!properties.getProperty("Saisie de texte").equals("Caché"));
+        enableDiaporama(!properties.getProperty("Diaporama").equals("Caché"));
+        enableBoutons(!properties.getProperty("Boutons").equals("Caché"));
     }
 
     private class ActionAfficherBoutons extends AbstractAction {
@@ -234,7 +266,7 @@ public class Application extends JFrame {   //1 xml par user simong.xml
             enableTexte(false);
         }
     }
-    
+
     public class ActionAfficherConversion extends AbstractAction {
         public ActionAfficherConversion() {
             super("Conversion Celsius/Farenheit");
@@ -265,10 +297,6 @@ public class Application extends JFrame {   //1 xml par user simong.xml
         actionAfficherBoutons.setEnabled(b);
     }
 
-    public void enableAide(boolean b) {
-        actionAfficherAide.setEnabled(b);
-    }
-
     public Action getActionAfficherConversion() {
         return actionAfficherConversion;
     }
@@ -279,10 +307,6 @@ public class Application extends JFrame {   //1 xml par user simong.xml
 
     public Action getActionAfficherDiaporama() {
         return actionAfficherDiaporama;
-    }
-
-    public Action getActionAfficherAide() {
-        return actionAfficherAide;
     }
 
     public static void main(String[] args) {

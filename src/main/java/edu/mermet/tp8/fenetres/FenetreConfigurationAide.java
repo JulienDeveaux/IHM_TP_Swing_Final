@@ -131,33 +131,17 @@ public class FenetreConfigurationAide {
 		valider.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent ev) {
-				// ------ écriture XML  à la fermeture de fenêtre ------
+				// ------ écriture XML ------
 				try{
 					OutputStream o = new FileOutputStream(preference);
 					properties.storeToXML(o, "propriétés");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				if(properties.getProperty("Conversion Celsius/Farenheit").equals("Caché")) {
-					appli.enableConversion(false);
-				} else {
-					appli.enableConversion(true);
-				}
-				if(properties.getProperty("Saisie de texte").equals("Caché")) {
-					appli.enableTexte(false);
-				} else {
-					appli.enableTexte(true);
-				}
-				if(properties.getProperty("Diaporama").equals("Caché")) {
-					appli.enableDiaporama(false);
-				} else {
-					appli.enableDiaporama(true);
-				}
-				if(properties.getProperty("Boutons").equals("Caché")) {
-					appli.enableBoutons(false);
-				} else {
-					appli.enableBoutons(true);
-				}
+				appli.enableConversion(!properties.getProperty("Conversion Celsius/Farenheit").equals("Caché"));
+				appli.enableTexte(!properties.getProperty("Saisie de texte").equals("Caché"));
+				appli.enableDiaporama(!properties.getProperty("Diaporama").equals("Caché"));
+				appli.enableBoutons(!properties.getProperty("Boutons").equals("Caché"));
 				f.setVisible(false);
 			}
 		});

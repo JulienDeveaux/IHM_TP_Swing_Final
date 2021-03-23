@@ -30,6 +30,17 @@ public class FenetreConversion extends AbstractFenetreInterne {
         JPanel ligneCelsius = new JPanel();
         ligneCelsius.setLayout(new FlowLayout(FlowLayout.TRAILING));
         ligneCelsius.setToolTipText("Valeur en degré de Celsius");
+        JPopupMenu popupCelcius = new JPopupMenu();
+        ActionListener menuListener = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                JOptionPane.showInternalMessageDialog(appli.getRootPane(), "Entrez la valeur en Celsius", "Aide", JOptionPane.INFORMATION_MESSAGE);
+            }
+        };
+        JMenuItem element;
+        popupCelcius.add(element = new JMenuItem("Aide"));
+        element.addActionListener(menuListener);
+        ligneCelsius.add(popupCelcius);
+        ligneCelsius.setComponentPopupMenu(popupCelcius);
 
         JButton helpCelsius = new JButton(new ImageIcon("src/main/resources/question.png"));
         helpCelsius.setToolTipText("Aide");
@@ -39,13 +50,15 @@ public class FenetreConversion extends AbstractFenetreInterne {
         helpCelsius.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                appli.getActionAfficherAide().actionPerformed(actionEvent);
+                JOptionPane.showInternalMessageDialog(appli.getRootPane(), "Entrez la valeur en Celcius", "Aide", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
         JLabel labCelsius = new JLabel("Celsius :");
         champCelsius = new JTextField(15);
         champCelsius.setToolTipText("Valeur en degré de Celsius");
+        champCelsius.add(popupCelcius);
+        champCelsius.setComponentPopupMenu(popupCelcius);
         labCelsius.setLabelFor(champCelsius);
 
         ligneCelsius.add(labCelsius);
@@ -59,6 +72,16 @@ public class FenetreConversion extends AbstractFenetreInterne {
         JPanel ligneFarenheit = new JPanel();
         ligneFarenheit.setLayout(new FlowLayout(FlowLayout.TRAILING));
         ligneFarenheit.setToolTipText("Valeur en degré de Farhenheit");
+        JPopupMenu popupFarhenheit = new JPopupMenu();
+        ActionListener menuListener2 = new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                JOptionPane.showInternalMessageDialog(appli.getRootPane(), "Entrez la valeur en Farhenheit", "Aide", JOptionPane.INFORMATION_MESSAGE);
+            }
+        };
+        popupFarhenheit.add(element = new JMenuItem("Aide"));
+        element.addActionListener(menuListener2);
+        ligneFarenheit.add(popupFarhenheit);
+        ligneFarenheit.setComponentPopupMenu(popupFarhenheit);
 
         JButton helpFrarenheit = new JButton(new ImageIcon("src/main/resources/question.png"));
         helpFrarenheit.setToolTipText("Aide");
@@ -68,13 +91,15 @@ public class FenetreConversion extends AbstractFenetreInterne {
         helpFrarenheit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                appli.getActionAfficherAide().actionPerformed(actionEvent);
+                JOptionPane.showInternalMessageDialog(appli.getRootPane(), "Entrez la valeur en Farhenheit", "Aide", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
         JLabel labFarenheit = new JLabel("Farenheit :");
         champFarenheit = new JTextField(15);
         champFarenheit.setToolTipText("Valeur en degré de Farhenheit");
+        champFarenheit.add(popupFarhenheit);
+        champFarenheit.setComponentPopupMenu(popupFarhenheit);
         labFarenheit.setLabelFor(champFarenheit);
 
         ligneFarenheit.add(labFarenheit);
