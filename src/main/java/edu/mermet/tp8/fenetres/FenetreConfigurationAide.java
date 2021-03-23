@@ -5,30 +5,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.*;
 import java.util.Properties;
 
 import static javax.swing.WindowConstants.HIDE_ON_CLOSE;
 
 public class FenetreConfigurationAide {
-	Properties properties;
-	File preference;
 
 	public  FenetreConfigurationAide(JMenu menuApplication){
 		JFrame f = new JFrame("Configuration des menus");
-		f.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent ev) {
-				// ------ écriture XML  à la fermeture de fenêtre ------
-				try{
-					OutputStream o = new FileOutputStream(preference);
-					properties.storeToXML(o, "propriétés");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		});
 		f.setDefaultCloseOperation(HIDE_ON_CLOSE);
 		generateConfig(f, menuApplication);
 		f.pack();
@@ -40,9 +25,9 @@ public class FenetreConfigurationAide {
 		// ------ parse et lecture XML ------
 		String nom = System.getProperty("user.name");
 		File ihmXML = new File(System.getProperty("user.home") + "/.ihm");
-        preference   = new File(ihmXML.getPath() + "/" + nom + ".xml");
+        File preference   = new File(ihmXML.getPath() + "/" + nom + ".xml");
 
-        properties = new Properties();
+		Properties properties = new Properties();
         try
         {
             boolean isExist = ihmXML.exists();
@@ -70,7 +55,7 @@ public class FenetreConfigurationAide {
 				}
 			}
 
-            if( !isExist )
+            if(!isExist)
                 throw new IOException("fichier no trouvé et impossible de le créer: " + preference.getPath());
         }
         catch (IOException e)
@@ -83,13 +68,14 @@ public class FenetreConfigurationAide {
 		for(int i = 0; i < menuApplication.getItemCount(); i++) {
 			menuItems[i] = menuApplication.getItem(i).getText();
 		}
-		f.setLayout(new GridLayout(menuApplication.getItemCount(), 4));
+		JPanel panneauUP = new JPanel();
+		panneauUP.setLayout(new GridLayout(menuApplication.getItemCount(), 4));
 		ButtonGroup[] bGroup = new ButtonGroup[menuApplication.getItemCount()];
 		JLabel[] labels = new JLabel[menuApplication.getItemCount()];
 		JRadioButton[] boutonsConfig = new JRadioButton[menuApplication.getItemCount() * 3];
 		for(int i = 0; i < menuApplication.getItemCount(); i++) {
 			labels[i] = new JLabel(menuItems[i]);
-			f.add(labels[i]);
+			panneauUP.add(labels[i]);
 			bGroup[i] = new ButtonGroup();
 			int it = 0;
 			for(int j = i * 3; j < (i * 3 + 3); j++) {
@@ -130,8 +116,40 @@ public class FenetreConfigurationAide {
 				}
 				bGroup[i].add(boutonsConfig[j]);
 				it++;
-				f.add(boutonsConfig[j]);
+				panneauUP.add(boutonsConfig[j]);
 			}
 		}
+		ButtonGroup buttonGroup = new ButtonGroup();
+		JButton valider = new JButton("valider");
+		JButton annuler = new JButton("Annuler");
+		buttonGroup.add(valider);
+		buttonGroup.add(annuler);
+		valider.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				// ------ écriture XML  à la fermeture de fenêtre ------
+				try{
+					OutputStream o = new FileOutputStream(preference);
+					properties.storeToXML(o, "propriétés");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				f.setVisible(false);
+			}
+		});
+		annuler.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				f.setVisible(false);
+			}
+		});
+
+		JPanel down = new JPanel(new BorderLayout());
+		down.add(valider, BorderLayout.WEST);
+		down.add(annuler, BorderLayout.EAST);
+
+		f.setLayout(new BorderLayout());
+		f.add(panneauUP, BorderLayout.NORTH);
+		f.add(down, BorderLayout.SOUTH);
 	}
 }

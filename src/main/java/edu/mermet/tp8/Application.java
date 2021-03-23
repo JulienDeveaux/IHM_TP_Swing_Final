@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.*;
+import java.util.Properties;
 import javax.swing.*;
 
 import edu.mermet.tp8.fenetres.*;
@@ -114,6 +116,55 @@ public class Application extends JFrame {   //1 xml par user simong.xml
         setSize(600,300);
         this.setLocationRelativeTo(null);
         setVisible(true);
+        // ------ parse et lecture XML ------
+        String nom = System.getProperty("user.name");
+        File ihmXML = new File(System.getProperty("user.home") + "/.ihm");
+        File preference   = new File(ihmXML.getPath() + "/" + nom + ".xml");
+
+        Properties properties = new Properties();
+        try
+        {
+            boolean isExist = ihmXML.exists();
+
+            if(!isExist)
+                isExist = ihmXML.mkdir();
+
+            if(!isExist)
+                throw new IOException("dossier .ihm non créé");
+
+            isExist = preference.exists();
+
+            if(isExist) {
+                properties.loadFromXML(new FileInputStream(preference));
+            } else {
+                isExist = preference.createNewFile();
+                for(int i = 0; i < menuApplication.getItemCount(); i++) {
+                    properties.setProperty(menuApplication.getItem(i).getText(), "Auto");
+                }
+                try{
+                    OutputStream o = new FileOutputStream(preference);
+                    properties.storeToXML(o, "propriétés");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(!isExist)
+                throw new IOException("fichier no trouvé et impossible de le créer: " + preference.getPath());
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+        if(properties.getProperty("itemConversion") == "Caché") {
+            enableConversion(false);
+        } else if(properties.getProperty("itemTexte") == "Caché") {
+            enableTexte(false);
+        } else if(properties.getProperty("itemDiaporama") == "Caché") {
+            enableDiaporama(false);
+        } else if(properties.getProperty("itemBoutons") == "Caché") {
+            enableBoutons(false);
+        }
     }
 
     private class ActionAfficherAide extends AbstractAction {
