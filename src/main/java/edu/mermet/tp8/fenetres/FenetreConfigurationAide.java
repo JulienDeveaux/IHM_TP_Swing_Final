@@ -1,29 +1,34 @@
 package edu.mermet.tp8.fenetres;
 
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
-
 import javax.swing.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.*;
+import java.util.Properties;
 
 import static javax.swing.WindowConstants.HIDE_ON_CLOSE;
 
 public class FenetreConfigurationAide {
+	Properties properties;
+	File preference;
+
 	public  FenetreConfigurationAide(JMenu menuApplication){
 		JFrame f = new JFrame("Configuration des menus");
+		f.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent ev) {
+				// ------ écriture XML  à la fermeture de fenêtre ------
+				try{
+					OutputStream o = new FileOutputStream(preference);
+					properties.storeToXML(o, "propriétés");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 		f.setDefaultCloseOperation(HIDE_ON_CLOSE);
 		generateConfig(f, menuApplication);
 		f.pack();
@@ -31,12 +36,52 @@ public class FenetreConfigurationAide {
 		f.setVisible(true);
 	}
 
-	public static void generateConfig(JFrame f, JMenu menuApplication){
+	public void generateConfig(JFrame f, JMenu menuApplication){
+		// ------ parse et lecture XML ------
+		String nom = System.getProperty("user.name");
+		File ihmXML = new File(System.getProperty("user.home") + "/.ihm");
+        preference   = new File(ihmXML.getPath() + "/" + nom + ".xml");
+
+        properties = new Properties();
+        try
+        {
+            boolean isExist = ihmXML.exists();
+
+            if(!isExist)
+                isExist = ihmXML.mkdir();
+
+            if(!isExist)
+                throw new IOException("dossier .ihm non créé");
+
+            isExist = preference.exists();
+
+            if(isExist) {
+            	properties.loadFromXML(new FileInputStream(preference));
+			} else {
+            	isExist = preference.createNewFile();
+				for(int i = 0; i < menuApplication.getItemCount(); i++) {
+					properties.setProperty(menuApplication.getItem(i).getText(), "Auto");
+				}
+				try{
+					OutputStream o = new FileOutputStream(preference);
+					properties.storeToXML(o, "propriétés");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+            if( !isExist )
+                throw new IOException("fichier no trouvé et impossible de le créer: " + preference.getPath());
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
 		// ------ récupération des entêtes des items du menu application ------
 		String[] menuItems = new String[menuApplication.getItemCount()];
 		for(int i = 0; i < menuApplication.getItemCount(); i++) {
 			menuItems[i] = menuApplication.getItem(i).getText();
-			System.out.println(menuItems[i]);
 		}
 		f.setLayout(new GridLayout(menuApplication.getItemCount(), 4));
 		ButtonGroup[] bGroup = new ButtonGroup[menuApplication.getItemCount()];
@@ -48,109 +93,45 @@ public class FenetreConfigurationAide {
 			bGroup[i] = new ButtonGroup();
 			int it = 0;
 			for(int j = i * 3; j < (i * 3 + 3); j++) {
+				final int pos = i;
 				if(it == 0) {
-					boutonsConfig[j] = new JRadioButton("Auto");
-				}else if(it == 1) {
 					boutonsConfig[j] = new JRadioButton("Affiché");
+					boutonsConfig[j].addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							properties.setProperty(menuItems[pos], "Affiché");
+						}
+					});
+					if(properties.getProperty(menuItems[pos]).equals("Affiché")) {
+						boutonsConfig[j].setSelected(true);
+					}
+				}else if(it == 1) {
+					boutonsConfig[j] = new JRadioButton("Auto");
+					boutonsConfig[j].addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							properties.setProperty(menuItems[pos], "Auto");
+						}
+					});
+					if(properties.getProperty(menuItems[pos]).equals("Auto")) {
+						boutonsConfig[j].setSelected(true);
+					}
 				} else if(it == 2) {
 					boutonsConfig[j] = new JRadioButton("Caché");
+					boutonsConfig[j].addActionListener(new ActionListener() {
+						@Override
+						public void actionPerformed(ActionEvent e) {
+							properties.setProperty(menuItems[pos], "Caché");
+						}
+					});
+					if(properties.getProperty(menuItems[pos]).equals("Caché")) {
+						boutonsConfig[j].setSelected(true);
+					}
 				}
 				bGroup[i].add(boutonsConfig[j]);
 				it++;
 				f.add(boutonsConfig[j]);
 			}
 		}
-		// ------ parse XML ------
-		/*File configXML = new File("/home/julien/.ihm/" + System.getProperty("user.name") + ".xml");
-		if(!configXML.exists() || configXML.isDirectory()) {
-			// ------ création ------
-			try {
-				DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-				// root elements
-				Document doc = docBuilder.newDocument();
-				Element rootElement = doc.createElement("properties");
-				doc.appendChild(rootElement);
-
-				// staff elements
-				Element staff = doc.createElement("utilisateur");
-				rootElement.appendChild(staff);
-
-				// set attribute to staff element
-				Attr attr = doc.createAttribute("nom");
-				attr.setValue(System.getProperty("user.name"));
-				staff.setAttributeNode(attr);
-
-				// firstname elements
-				Element firstname = doc.createElement("firstname");
-				firstname.appendChild(doc.createTextNode("yong"));
-				staff.appendChild(firstname);
-
-				// lastname elements
-				Element lastname = doc.createElement("lastname");
-				lastname.appendChild(doc.createTextNode("mook kim"));
-				staff.appendChild(lastname);
-
-				// nickname elements
-				Element nickname = doc.createElement("nickname");
-				nickname.appendChild(doc.createTextNode("mkyong"));
-				staff.appendChild(nickname);
-
-				// salary elements
-				Element salary = doc.createElement("salary");
-				salary.appendChild(doc.createTextNode("100000"));
-				staff.appendChild(salary);
-
-				// write the content into xml file
-				TransformerFactory transformerFactory = TransformerFactory.newInstance();
-				Transformer transformer = transformerFactory.newTransformer();
-				DOMSource source = new DOMSource(doc);
-				File dossier = new File("/home/julien/.ihm/");
-				if (!dossier.exists()) {
-					dossier.mkdir();
-					System.out.println("Directory is created!");
-				}
-
-				StreamResult result = new StreamResult(new File("/home/julien/.ihm/" + System.getProperty("user.name") + ".xml"));
-
-				transformer.transform(source, result);
-
-			} catch (ParserConfigurationException | TransformerException e) {
-				e.printStackTrace();
-			}
-		}
-			// ------ lecture  ------
-		try {
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(configXML);
-
-			//optional, but recommended
-			//read this - http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-			doc.getDocumentElement().normalize();
-
-			NodeList nList = doc.getElementsByTagName("user");
-
-			for (int temp = 0; temp < nList.getLength(); temp++) {
-
-				Node nNode = nList.item(temp);
-
-				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-					Element eElement = (Element) nNode;
-
-					System.out.println("user id : " + eElement.getAttribute("id"));
-					System.out.println("First Name : " + eElement.getElementsByTagName("firstname").item(0).getTextContent());
-					System.out.println("Last Name : " + eElement.getElementsByTagName("lastname").item(0).getTextContent());
-					System.out.println("Nick Name : " + eElement.getElementsByTagName("nickname").item(0).getTextContent());
-					System.out.println("Salary : " + eElement.getElementsByTagName("salary").item(0).getTextContent());
-
-				}
-			}
-		} catch (ParserConfigurationException | IOException | SAXException e) {
-			e.printStackTrace();
-		}*/
-
 	}
 }
