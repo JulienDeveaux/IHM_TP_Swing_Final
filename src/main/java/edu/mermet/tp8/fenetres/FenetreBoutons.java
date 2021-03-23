@@ -29,8 +29,11 @@ public class FenetreBoutons extends AbstractFenetreInterne {
         super(action, "Boutons");
         setLayout(new FlowLayout());
         boutonTexte = new JButton(appli.getActionAfficherTexte());
+        boutonTexte.setToolTipText("Affiche la fenêtre de texte");
         boutonDiaporama = new JButton(appli.getActionAfficherDiaporama());
+        boutonDiaporama.setToolTipText("Affiche la fenêtre de diaporama");
         boutonDegres = new JButton(appli.getActionAfficherConversion());
+        boutonDegres.setToolTipText("Affiche la fenêtre des degrés");
         add(boutonDegres);
         add(boutonTexte);
         add(boutonDiaporama);

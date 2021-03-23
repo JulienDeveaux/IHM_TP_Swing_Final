@@ -5,16 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JDesktopPane;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 import edu.mermet.tp8.fenetres.*;
 
@@ -112,6 +103,12 @@ public class Application extends JFrame {   //1 xml par user simong.xml
         // ------ fenêtre aide ------
         aide = new FenetreAide(this, actionAfficherAide);
         this.add(aide);
+        // ------ fenêtre aide du jour ------
+        JInternalFrame jour = new JInternalFrame();
+        jour.add(new JLabel("test"));
+        jour.setVisible(true);
+        jour.setDefaultCloseOperation(HIDE_ON_CLOSE);
+        this.add(jour);
         // ****** Fin création fenêtres ******
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(600,300);

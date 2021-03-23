@@ -43,6 +43,7 @@ public class FenetreDiaporama extends AbstractFenetreInterne {
         textes[1] = "le";
         textes[2] = "monde";*/
         affichage = new JLabel();
+        affichage.setToolTipText("diaporama d'images");
         panneauTexte.add(affichage);
         affichage.setIcon(images[0]);
  //       affichage.setText(textes[0]);

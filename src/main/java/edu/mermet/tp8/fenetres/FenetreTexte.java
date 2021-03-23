@@ -39,13 +39,17 @@ public class FenetreTexte extends AbstractFenetreInterne {
         super(action, "Texte");
         actionGras = new ActionGras();
         gras = new JCheckBox(actionGras);
+        gras.setToolTipText("Met le texte en gras");
         actionRouge = new ActionRouge();
         rouge = new JCheckBox(actionRouge);
+        rouge.setToolTipText("Met le texte en rouge");
         JPanel panneauBouton = new JPanel();
+        panneauBouton.setToolTipText("Change l'apparence du texte");
         panneauBouton.add(gras);
         panneauBouton.add(rouge);
         add(panneauBouton,BorderLayout.NORTH);
         texte = new JTextArea(6,20);
+        texte.setToolTipText("Entrez votre texte ici");
         texte.setLineWrap(true);
         texte.setWrapStyleWord(true);
         JScrollPane panneauTexte = new JScrollPane(texte);
