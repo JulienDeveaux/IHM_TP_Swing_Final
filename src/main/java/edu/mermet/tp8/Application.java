@@ -160,60 +160,82 @@ public class Application extends JFrame {
                 while (reader.readLine() != null) nbLignes++;
                 reader.close();
 
-                listeAide = new String[nbLignes - 1];
+                listeAide = new String[nbLignes];
                 for(int i = 0; i < nbLignes; i++) {
                     listeAide[i] = contextuelAide.getProperty("" + i);
                 }
             }
         } catch (Exception e) {
-            System.out.println("Exception: " + e);
+            e.printStackTrace();
         }
-        Random r = new Random();
-        int rand = r.nextInt(nbLignes - 1) + 1;
-        while("Caché".equals(properties.getProperty("Aide" + rand))) {      //TODO boucle infinie si tout caché
+        nbLignes = nbLignes - 2;
+        System.out.println("nbL: " + nbLignes);
+        int rand = (int) (Math.random() * (nbLignes - 1)) + 1;
+        int[] tabCache = new int[listeAide.length];
+        for(int i = 0; i < listeAide.length; i++) {
+            if("Caché".equals(properties.getProperty("Aide" + i))) {
+                tabCache[i] = 1;
+            } else {
+                tabCache[i] = 0;
+            }
+        }
 
-            rand = r.nextInt(nbLignes - 1) + 1;
+        boolean br = false;
+        for(int i = 0; i < listeAide.length; i++) {
+            if(tabCache[rand] == 1) {
+                if(rand < listeAide.length - 1) {
+                    rand++;
+                } else {
+                    rand = 1;
+                }
+            } else {
+                br = true;
+                break;
+            }
         }
         aideText.setText(listeAide[rand]);
 
         // ***** Fin récupération d'aide aléatoire
-        JWindow aideJour = new JWindow(this);
-        JButton aideOK = new JButton("OK");
-        JButton dontAskAgain = new JButton("Ne plus afficher");
-        aideOK.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                aideJour.setVisible(false);
-            }
-        });
-        final int ra = rand;
-        dontAskAgain.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                properties.setProperty("Aide" + ra, "Caché");
-                try{
-                    OutputStream o = new FileOutputStream(preference);
-                    properties.storeToXML(o, "propriétés");
-                } catch (IOException ex) {
-                    ex.printStackTrace();
+
+        if(br) {
+            JWindow aideJour = new JWindow(this);
+            JButton aideOK = new JButton("OK");
+            JButton dontAskAgain = new JButton("Ne plus afficher");
+            aideOK.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    aideJour.setVisible(false);
                 }
-                aideJour.setVisible(false);
-            }
-        });
-        ButtonGroup aideBgroup = new ButtonGroup();
-        aideBgroup.add(aideOK);
-        aideBgroup.add(dontAskAgain);
+            });
+            final int ra = rand;
+            dontAskAgain.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    properties.setProperty("Aide" + ra, "Caché");
+                    try{
+                        OutputStream o = new FileOutputStream(preference);
+                        properties.storeToXML(o, "propriétés");
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    aideJour.setVisible(false);
+                }
+            });
+            ButtonGroup aideBgroup = new ButtonGroup();
+            aideBgroup.add(aideOK);
+            aideBgroup.add(dontAskAgain);
 
-        JPanel aideDown = new JPanel(new BorderLayout());
-        aideDown.add(aideOK, BorderLayout.WEST);
-        aideDown.add(dontAskAgain, BorderLayout.EAST);
+            JPanel aideDown = new JPanel(new BorderLayout());
+            aideDown.add(aideOK, BorderLayout.WEST);
+            aideDown.add(dontAskAgain, BorderLayout.EAST);
 
-        aideJour.add(aideText, BorderLayout.NORTH);
-        aideJour.add(aideDown, BorderLayout.SOUTH);
-        aideJour.setSize(200, 100);
-        Point centre=GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
-        aideJour.setLocation(centre);
-        aideJour.setVisible(true);
+            aideJour.add(aideText, BorderLayout.NORTH);
+            aideJour.add(aideDown, BorderLayout.SOUTH);
+            aideJour.setSize(200, 100);
+            Point centre=GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
+            aideJour.setLocation(centre);
+            aideJour.setVisible(true);
+        }
         // ****** Fin création fenêtres ******
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(600,300);
