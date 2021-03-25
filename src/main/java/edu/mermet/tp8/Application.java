@@ -2,10 +2,7 @@ package edu.mermet.tp8;
 
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.*;
 import java.util.Properties;
 import java.util.Random;
@@ -159,7 +156,6 @@ public class Application extends JFrame {
                 nbLignes = 1;
                 while (reader.readLine() != null) nbLignes++;
                 reader.close();
-
                 listeAide = new String[nbLignes];
                 for(int i = 0; i < nbLignes; i++) {
                     listeAide[i] = contextuelAide.getProperty("" + i);
@@ -169,7 +165,6 @@ public class Application extends JFrame {
             e.printStackTrace();
         }
         nbLignes = nbLignes - 2;
-        System.out.println("nbL: " + nbLignes);
         int rand = (int) (Math.random() * (nbLignes - 1)) + 1;
         int[] tabCache = new int[listeAide.length];
         for(int i = 0; i < listeAide.length; i++) {
@@ -234,6 +229,21 @@ public class Application extends JFrame {
             aideJour.setSize(200, 100);
             Point centre=GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
             aideJour.setLocation(centre);
+            final Point point = new Point();
+            aideJour.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    point.x = e.getX();
+                    point.y = e.getY();
+                }
+            });
+            aideJour.addMouseMotionListener(new MouseMotionAdapter() {
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    Point p = aideJour.getLocation();
+                    aideJour.setLocation(p.x + e.getX() - point.x, p.y + e.getY() - point.y);
+                }
+            });
             aideJour.setVisible(true);
         }
         // ****** Fin création fenêtres ******
